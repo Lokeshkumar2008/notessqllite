@@ -12,6 +12,8 @@
         body {
             background: linear-gradient(135deg, #667eea, #764ba2);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .navbar {
@@ -22,6 +24,10 @@
         .navbar-brand {
             color: white !important;
             font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
         }
 
         .note-container {
@@ -60,50 +66,76 @@
             width: 350px;
             z-index: 9999;
         }
+
+        footer {
+            background: hwb(0 0% 100%);
+            text-align: center;
+            padding: 10px;
+        }
     </style>
 </head>
+
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg px-4">
-    <span class="navbar-brand">View Note</span>
+<nav class="navbar navbar-expand-lg bg-dark">
+  <div class="container-fluid">
+    
+    <a class="navbar-brand">MyApp</a>
 
-    <div class="ms-auto">
-        <a href="/viewall" class="btn btn-light me-2">All Notes</a>
-        <a href="/dashboard" class="btn btn-success me-2">Dashboard</a>
-        <a href="/logout" class="btn btn-danger">Logout</a>
+    <button class="navbar-toggler" type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#menu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link text-white" href="/viewall">ALLNOTES</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="/dashboard">DASHBOARD</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="/logot">LOGOUT</a></li>
+      </ul>
     </div>
+  </div>
 </nav>
 
-<!-- 🔥 FLASH MESSAGE -->
-<div class="flash-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, msg in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
-                    {{ msg }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div>
+<!-- ✅ MAIN CONTENT WRAPPER -->
+<div class="main-content">
 
-<!-- Note View -->
-<div class="note-container">
-    <div class="note-card">
-
-        <h3 class="note-title">{{ note[1] }}</h3>
-
-        <p class="note-content">{{ note[2] }}</p>
-
-        <div class="btn-group-custom d-flex gap-2">
-            <a href="/updatenote/{{ note[0] }}" class="btn btn-warning">Edit</a>
-            <a href="/deletenote/{{ note[0] }}" class="btn btn-danger">Delete</a>
-        </div>
-
+    <!-- 🔥 FLASH MESSAGE -->
+    <div class="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
+                        {{ msg }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </div>
+
+    <!-- Note View -->
+    <div class="note-container">
+        <div class="note-card">
+
+            <h3 class="note-title">{{ note[1] }}</h3>
+            <p class="note-content">{{ note[2] }}</p>
+
+            <div class="btn-group-custom d-flex gap-2">
+                <a href="/updatenote/{{ note[0] }}" class="btn btn-warning">Edit</a>
+                <a href="/deletenote/{{ note[0] }}" class="btn btn-danger">Delete</a>
+            </div>
+
+        </div>
+    </div>
+
 </div>
+
+<!-- ✅ FOOTER -->
+<footer class="text-white">
+    © 2026 Notes Management System
+</footer>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

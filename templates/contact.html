@@ -30,6 +30,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .contact-card {
@@ -68,7 +69,7 @@
             padding: 10px;
         }
 
-        /* Flash popup */
+        /* Flash */
         .flash-container {
             position: fixed;
             top: 80px;
@@ -77,21 +78,51 @@
             width: 350px;
             z-index: 9999;
         }
+
+        /* Mobile */
+        @media (max-width: 576px) {
+            .contact-card {
+                padding: 20px;
+            }
+
+            .flash-container {
+                width: 90%;
+            }
+        }
     </style>
 </head>
 <body>
 
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg px-4">
-    <span class="navbar-brand">Notes Management System</span>
+<nav class="navbar navbar-expand-md px-4">
+    <div class="container-fluid">
 
-    <div class="ms-auto">
-        <a href="/dashboard" class="nav-link d-inline">Dashboard</a>
-        <a href="/logout" class="nav-link d-inline">Logout</a>
+        <span class="navbar-brand">Notes Management System</span>
+
+        <!-- Toggle -->
+        <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu -->
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav ms-md-auto text-start text-md-center gap-md-4">
+
+                <li class="nav-item">
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/logout" class="nav-link">Logout</a>
+                </li>
+
+            </ul>
+        </div>
+
     </div>
 </nav>
 
-<!-- ✅ FIXED FLASH MESSAGE -->
+<!-- Flash -->
 <div class="flash-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -108,6 +139,7 @@
 <!-- Contact Form -->
 <div class="main-container">
     <div class="contact-card">
+
         <h4 class="contact-title">Contact</h4>
 
         <form method="POST">
@@ -125,6 +157,7 @@
 
             <button class="btn btn-custom w-100">Submit</button>
         </form>
+
     </div>
 </div>
 

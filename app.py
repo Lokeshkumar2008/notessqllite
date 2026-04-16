@@ -193,10 +193,6 @@ def delete_note(id):
     flash("Note deleted successfully!", "danger")
     return redirect('/dashboard')
 
-
-
-
-
 # ---------------- FORGOT PASSWORD ----------------
 otp_store = {}
 
@@ -205,7 +201,6 @@ def forgot():
     if request.method == "POST":
         email = request.form['email']
 
-        # check user exists
         con = get_connection()
         cur = con.cursor()
         cur.execute("SELECT * FROM users WHERE email=?", (email,))
@@ -228,23 +223,28 @@ def forgot():
 
         try:
             mail.send(msg)
-            flash("OTP sent to your email!", "success")
+            flash("OTP sent!", "success")
         except:
-            flash("Failed to send OTP!", "danger")
+            flash("Mail failed!", "danger")
 
         return redirect('/verify')
 
     return render_template("forgot.html")
 
-
 # ---------------- VERIFY OTP ----------------
 @app.route('/verify', methods=['GET', 'POST'])
 def verify():
     if request.method == "POST":
-        otp = int(request.form['otp'])
+        otp_input = request.form.get('otp')
+
+        if not otp_input:
+            flash("Enter OTP", "danger")
+            return redirect('/verify')
+
+        otp_input = int(otp_input)
 
         for email, real_otp in otp_store.items():
-            if otp == real_otp:
+            if otp_input == real_otp:
                 session['reset_email'] = email
                 flash("OTP verified!", "success")
                 return redirect('/reset')
@@ -252,7 +252,6 @@ def verify():
         flash("Invalid OTP", "danger")
 
     return render_template("verify.html")
-
 
 # ---------------- RESET PASSWORD ----------------
 @app.route('/reset', methods=['GET', 'POST'])
@@ -276,9 +275,6 @@ def reset():
 
     return render_template("reset.html")
 
-
-
-
 # ---------------- CONTACT ----------------
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -288,7 +284,7 @@ def contact():
         message = request.form.get('message')
 
         if not name or not email or not message:
-            flash("All fields are required!", "danger")
+            flash("All fields required!", "danger")
             return redirect('/contact')
 
         msg = Message(
@@ -301,19 +297,19 @@ def contact():
 
         try:
             mail.send(msg)
-            flash("Message sent successfully!", "success")
+            flash("Message sent!", "success")
         except:
-            flash("Email sending failed!", "danger")
+            flash("Mail failed!", "danger")
 
         return redirect('/contact')
 
     return render_template("contact.html")
 
-
 # ---------------- ABOUT ----------------
 @app.route('/about')
 def about():
     return render_template("about.html")
+
 # ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run(debug=True)

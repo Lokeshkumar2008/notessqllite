@@ -12,6 +12,8 @@
         body {
             background: linear-gradient(135deg, #667eea, #764ba2);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .navbar {
@@ -22,6 +24,10 @@
         .navbar-brand {
             color: white !important;
             font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
         }
 
         .card-note {
@@ -45,7 +51,6 @@
             margin-bottom: 20px;
         }
 
-        /* 🔥 Flash popup */
         .flash-container {
             position: fixed;
             top: 80px;
@@ -54,22 +59,57 @@
             width: 350px;
             z-index: 9999;
         }
+
+        footer {
+            background: #e5e7eb;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* ✅ ONLY SMALL SCREEN CHANGES */
+        @media(max-width:768px){
+
+            .flash-container{
+                width: 90%;
+            }
+
+            .navbar .btn{
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<!-- Navbar -->
+<!-- ✅ NAVBAR -->
 <nav class="navbar navbar-expand-lg px-4">
-    <span class="navbar-brand">All Notes</span>
 
-    <div class="ms-auto">
+  <span class="navbar-brand">All Notes</span>
+
+  <!-- TOGGLER -->
+  <button class="navbar-toggler" type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- MENU -->
+  <div class="collapse navbar-collapse" id="menu">
+    <div class="ms-auto mt-3 mt-lg-0">
         <a href="/dashboard" class="btn btn-light me-2">Dashboard</a>
         <a href="/addnote" class="btn btn-success me-2">Add Note</a>
         <a href="/logout" class="btn btn-danger">Logout</a>
     </div>
+  </div>
+
 </nav>
 
-<!-- 🔥 FLASH MESSAGE -->
+<!-- ✅ MAIN CONTENT -->
+<div class="main-content">
+
+<!-- FLASH -->
 <div class="flash-container">
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -91,12 +131,12 @@
         
         {% if notes %}
             {% for note in notes %}
-            <div class="col-md-4 mb-4">
+            <div class="col-md-4 col-sm-6 col-12 mb-4">
                 <div class="card card-note p-3">
                     <h5>{{ note[1] }}</h5>
                     <p>{{ note[2][:120] }}...</p>
 
-                    <div class="d-flex gap-2 mt-2">
+                    <div class="d-flex gap-2 mt-2 flex-wrap">
                         <a href="/viewnotes/{{ note[0] }}" class="btn btn-primary btn-sm">View</a>
                         <a href="/updatenote/{{ note[0] }}" class="btn btn-warning btn-sm">Edit</a>
                         <a href="/deletenote/{{ note[0] }}" class="btn btn-danger btn-sm">Delete</a>
@@ -116,10 +156,17 @@
 
 </div>
 
+</div>
+
+<!-- ✅ FOOTER SAME AS REFERENCE -->
+<footer>
+    © 2026 Notes Management System
+</footer>
+
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- 🔥 AUTO HIDE -->
+<!-- AUTO HIDE -->
 <script>
 setTimeout(() => {
     document.querySelectorAll('.alert').forEach(el => {

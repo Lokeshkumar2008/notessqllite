@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -34,9 +33,11 @@ body {
     margin-left: 10px;
 }
 
-.navbar a {
+/* LINKS */
+.nav-links a {
     color: rgb(11, 11, 151);
     text-decoration: none;
+    font-weight: 500;
 }
 
 /* BACKGROUND */
@@ -98,20 +99,41 @@ footer {
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar d-flex justify-content-between align-items-center">
+<nav class="navbar navbar-expand-md">
+  <div class="container-fluid">
+
+    <!-- LEFT -->
     <div class="d-flex align-items-center">
         <img src="https://img.freepik.com/free-vector/vector-notebook-silhouette-design_779267-1820.jpg" class="logo">
         <div class="nav-title">NOTES MANAGEMENT SYSTEM</div>
     </div>
 
-    <div>
-        <a href="/" class="me-3">Home</a>
-        <a href="/about" class="me-3">About</a>
-        <a href="/contact">Contact</a>
-    </div>
-</nav>
+    <!-- RIGHT SIDE -->
+    <div class="d-flex align-items-center gap-2">
 
+        <!-- ✅ THREE DOTS (ONLY SMALL SCREEN) -->
+        <div class="dropdown d-md-none">
+            <button class="btn btn-light" data-bs-toggle="dropdown">
+                ⋮
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/">Home</a></li>
+                <li><a class="dropdown-item" href="/about">About</a></li>
+                <li><a class="dropdown-item" href="/contact">Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- ✅ NORMAL LINKS (ONLY LARGE SCREEN) -->
+        <div class="d-none d-md-flex gap-4 nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+        </div>
+
+    </div>
+
+  </div>
+</nav>
 <!-- 🔥 FLASH -->
 <div class="flash-box">
     {% with messages = get_flashed_messages(with_categories=true) %}

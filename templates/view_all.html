@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Notes</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(8px);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .card-note {
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        .card-note:hover {
+            transform: scale(1.03);
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .title {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* 🔥 Flash popup */
+        .flash-container {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 350px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg px-4">
+    <span class="navbar-brand">All Notes</span>
+
+    <div class="ms-auto">
+        <a href="/dashboard" class="btn btn-light me-2">Dashboard</a>
+        <a href="/addnote" class="btn btn-success me-2">Add Note</a>
+        <a href="/logout" class="btn btn-danger">Logout</a>
+    </div>
+</nav>
+
+<!-- 🔥 FLASH MESSAGE -->
+<div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
+                    {{ msg }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container">
+
+    <h3 class="title">Your Notes</h3>
+
+    <div class="row">
+        
+        {% if notes %}
+            {% for note in notes %}
+            <div class="col-md-4 mb-4">
+                <div class="card card-note p-3">
+                    <h5>{{ note[1] }}</h5>
+                    <p>{{ note[2][:120] }}...</p>
+
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="/viewnotes/{{ note[0] }}" class="btn btn-primary btn-sm">View</a>
+                        <a href="/updatenote/{{ note[0] }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="/deletenote/{{ note[0] }}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="text-center text-white mt-5">
+                <h4>No Notes Available</h4>
+                <p>Start by creating your first note.</p>
+                <a href="/addnote" class="btn btn-light">Add Note</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- 🔥 AUTO HIDE -->
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 300);
+    });
+}, 3000);
+</script>
+
+</body>
+</html>

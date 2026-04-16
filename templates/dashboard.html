@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(6px);
+            padding: 10px 20px;
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        /* CENTER SEARCH */
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input {
+            width: 320px;
+            border-radius: 25px;
+            padding: 8px 15px;
+            border: none;
+            outline: none;
+        }
+
+        .search-btn {
+            border-radius: 25px;
+            padding: 8px 18px;
+            background: white;
+            border: none;
+            font-weight: 500;
+        }
+
+        .search-btn:hover {
+            background: #e2e2e2;
+        }
+
+        /* NOTE CARDS */
+        .card-note {
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+
+        .card-note:hover {
+            transform: scale(1.05);
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        /* FLASH */
+        .flash-container {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 350px;
+            z-index: 9999;
+        }
+
+        /* BUTTONS */
+        .btn {
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar d-flex align-items-center">
+
+    <!-- LEFT -->
+    <span class="navbar-brand">Notes Dashboard</span>
+
+    <!-- CENTER SEARCH -->
+    <div class="mx-auto">
+        <form class="search-box" method="GET" action="/dashboard">
+            <input 
+                type="search" 
+                name="search" 
+                class="search-input"
+                placeholder="Search notes..."
+                value="{{ request.args.get('search','') }}"
+            >
+            <button class="search-btn">Search</button>
+        </form>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+        <a href="/addnote" class="btn btn-light me-2">Add Note</a>
+        <a href="/logout" class="btn btn-danger">Logout</a>
+    </div>
+
+</nav>
+
+<!-- FLASH -->
+<div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
+                    {{ msg }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+    <div class="row">
+        
+        {% if notes %}
+            {% for note in notes %}
+            <div class="col-md-4 mb-4">
+                <div class="card card-note p-3">
+                    <h5>{{ note[1] }}</h5>
+                    <p>{{ note[2][:100] }}...</p>
+
+                    <div class="d-flex gap-2 mt-2">
+                        <a href="/viewnotes/{{ note[0] }}" class="btn btn-primary btn-sm">View</a>
+                        <a href="/updatenote/{{ note[0] }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="/deletenote/{{ note[0] }}" class="btn btn-danger btn-sm">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center text-white mt-5">
+                <h4>No Notes Found 😔</h4>
+                <p>Try another search or add a new note.</p>
+                <a href="/addnote" class="btn btn-light">Add Note</a>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- AUTO HIDE FLASH -->
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(el => {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 300);
+    });
+}, 3000);
+</script>
+
+</body>
+</html>

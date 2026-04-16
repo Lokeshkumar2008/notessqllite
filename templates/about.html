@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        .navbar {
+            background: rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+
+        .main-container {
+            flex: 1;
+            padding: 40px;
+        }
+
+        .about-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        hr {
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        footer {
+            background: rgba(0,0,0,0.4);
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg px-4">
+    <span class="navbar-brand">Notes Management System</span>
+
+    <div class="ms-auto">
+        <a href="/dashboard" class="nav-link d-inline">Dashboard</a>
+        <a href="/contact" class="nav-link d-inline">Contact</a>
+        <a href="/logout" class="nav-link d-inline">Logout</a>
+    </div>
+</nav>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-3">
+      {% for category, message in messages %}
+        <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Content -->
+<div class="container main-container">
+
+    <h2 class="about-title">About Notes Management System</h2>
+
+    <p class="text-center">
+        A secure and simple platform to create, manage, and organize your personal notes.
+    </p>
+
+    <hr>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h4>Our Purpose</h4>
+            <p>
+                This system helps users store notes digitally in a secure way.
+                Each user has a private workspace to manage notes anytime.
+            </p>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Key Features</h4>
+            <ul>
+                <li>User Authentication</li>
+                <li>Add / Edit / Delete Notes</li>
+                <li>Secure Data</li>
+                <li>Private Access</li>
+                <li>Responsive Design</li>
+            </ul>
+        </div>
+    </div>
+
+    <hr>
+
+    <h4>Technologies Used</h4>
+    <p>
+        HTML, CSS, Bootstrap, Flask (Python), and MySQL.
+    </p>
+
+</div>
+
+<!-- Footer -->
+<footer>
+    <p class="mb-0 text-white">© 2026 Notes Management System</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

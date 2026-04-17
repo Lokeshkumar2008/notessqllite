@@ -99,37 +99,29 @@ footer {
 
 <body>
 
-<nav class="navbar navbar-expand-md">
+<nav class="navbar navbar-expand-md bg-light">
   <div class="container-fluid">
 
-    <!-- LEFT -->
-    <div class="d-flex align-items-center">
-        <img src="https://img.freepik.com/free-vector/vector-notebook-silhouette-design_779267-1820.jpg" class="logo">
-        <div class="nav-title">NOTES MANAGEMENT SYSTEM</div>
-    </div>
+    <!-- LEFT (LOGO + TITLE) -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="https://img.freepik.com/free-vector/vector-notebook-silhouette-design_779267-1820.jpg"
+           style="width:40px;" class="me-2">
+      <span>NOTES MANAGEMENT SYSTEM</span>
+    </a>
 
-    <!-- RIGHT SIDE -->
-    <div class="d-flex align-items-center gap-2">
+    <!-- ✅ TOGGLER RIGHT SIDE -->
+    <button class="navbar-toggler ms-auto" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        <!-- ✅ THREE DOTS (ONLY SMALL SCREEN) -->
-        <div class="dropdown d-md-none">
-            <button class="btn btn-light" data-bs-toggle="dropdown">
-                ⋮
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/">Home</a></li>
-                <li><a class="dropdown-item" href="/about">About</a></li>
-                <li><a class="dropdown-item" href="/contact">Contact</a></li>
-            </ul>
-        </div>
-
-        <!-- ✅ NORMAL LINKS (ONLY LARGE SCREEN) -->
-        <div class="d-none d-md-flex gap-4 nav-links">
-            <a href="/">Home</a>
-            <a href="/about">About</a>
-            <a href="/contact">Contact</a>
-        </div>
-
+    <!-- MENU -->
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav ms-auto gap-3">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+      </ul>
     </div>
 
   </div>

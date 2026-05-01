@@ -286,7 +286,61 @@
     .action-btn {
         width: 100%;
         padding: 10px;
+ 
     }
+    .notes-grid {
+    grid-template-columns: 1fr;   /* single column */
+    justify-items: center;        /* center cards */
+}
+
+.card-note {
+    width: 100%;
+    max-width: 350px;
+}
+
+}
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* change */
+    gap: 25px;
+    justify-content: center; /* add */
+}
+.search-box {
+    width: 100%;   /* add this line */
+}
+@media (max-width: 768px) {
+
+    .search-fixed {
+        padding: 8px 10px;
+    }
+
+    .search-btn span {
+        display: none; /* icon only */
+    }
+}
+.search-fixed {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    width: 100%;
+    padding: 10px 12px;   /* small side gap */
+    z-index: 990;
+    background: rgba(15, 23, 42, 0.95);
+}
+
+/* PERFECT MOBILE SEARCH */
+.search-box {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    background: rgba(30, 41, 59, 0.9);
+    border-radius: 30px;
+    padding: 5px;
+}
+.search-box form {
+    width: 100%;
+    display: flex;
 }
 </style>
 

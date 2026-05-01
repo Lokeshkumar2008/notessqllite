@@ -1,113 +1,236 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify OTP</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}Verify OTP - Notes App{% endblock %}
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .card-box {
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            border-radius: 15px;
-            background: #fff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .title {
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .btn-custom {
-            background-color: #667eea;
-            color: white;
-        }
-
-        .btn-custom:hover {
-            background-color: #5a67d8;
-        }
-
-        .link {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        /* 🔥 Flash popup */
-        .flash-container {
-            position: fixed;
-            top: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 350px;
-            z-index: 9999;
-        }
-        .form-container {
-    max-width: 650px;
-    margin: auto;
-    margin-top: 60px;
-    flex: 1;   /* ✅ PUSH FOOTER DOWN */
+{% block content %}
+<style>
+/* Center the container */
+.verify-page-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 350px);
+    padding: 20px;
+    animation: fadeIn 0.6s ease-out;
 }
-    </style>
-</head>
-<body>
 
-<!-- 🔥 FLASH MESSAGE -->
-<div class="flash-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, msg in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
-                    {{ msg }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div>
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-<div class="card-box">
-    <h3 class="title">Verify OTP</h3>
+.verify-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 440px;
+    padding: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
 
-    <form method="POST">
-        <div class="mb-3">
-            <label>Enter OTP</label>
-            <input type="text" name="otp" class="form-control" placeholder="Enter 6-digit OTP" required>
+/* Subtle glow at the top edge */
+.verify-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent));
+}
+
+.verify-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.verify-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.verify-title {
+    color: var(--text-main);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.verify-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* Form Inputs */
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.form-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.input-icon-wrapper {
+    position: relative;
+}
+
+.input-icon-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    transition: all 0.3s;
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.form-control {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    border-radius: 12px;
+    padding: 14px 16px 14px 48px;
+    font-size: 1.2rem; /* slightly larger for OTP */
+    letter-spacing: 4px; /* for OTP readability */
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.form-control:focus {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    color: var(--text-main);
+    outline: none;
+}
+
+.form-control:focus + i, .input-icon-wrapper:focus-within i {
+    color: var(--primary-color);
+}
+
+.form-control::placeholder {
+    color: rgba(148, 163, 184, 0.4);
+    letter-spacing: normal;
+    font-size: 1rem;
+}
+
+/* Submit Button */
+.btn-submit {
+    background: linear-gradient(135deg, var(--primary-color), #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #4f46e5, var(--primary-color));
+}
+
+/* Login Link */
+.login-link {
+    text-align: center;
+    margin-top: 30px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.login-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.login-link a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 576px) {
+    .verify-card {
+        padding: 30px 20px;
+        border-radius: 16px;
+    }
+    
+    .verify-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .verify-title {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+<div class="verify-page-wrapper py-4">
+    <div class="verify-card">
+        
+        <div class="verify-header">
+            <div class="verify-icon">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <h2 class="verify-title">Verify Identity</h2>
+            <p class="verify-subtitle">We've sent a 6-digit code to your email. Please enter it below.</p>
         </div>
 
-        <button type="submit" class="btn btn-custom w-100">Verify</button>
-    </form>
+        <form method="POST">
+            
+            <div class="form-group">
+                <label class="form-label">Authentication Code</label>
+                <div class="input-icon-wrapper">
+                    <input type="text" name="otp" class="form-control" placeholder="000000" maxlength="6" required autocomplete="one-time-code">
+                    <i class="bi bi-123"></i>
+                </div>
+            </div>
 
-    <div class="link">
-        <a href="/forgot">Resend OTP</a>
+            <button type="submit" class="btn-submit">
+                Verify Code <i class="bi bi-check2-circle ms-1"></i>
+            </button>
+
+        </form>
+
+        <div class="login-link">
+            Didn't receive code? <a href="/forgot"><i class="bi bi-arrow-clockwise"></i> Resend OTP</a>
+        </div>
+
     </div>
 </div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- 🔥 AUTO HIDE -->
-<script>
-setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(el => {
-        el.classList.remove('show');
-        setTimeout(() => el.remove(), 300);
-    });
-}, 3000);
-</script>
-
-</body>
-</html>
+{% endblock %}

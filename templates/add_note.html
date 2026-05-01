@@ -1,127 +1,244 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Note</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}Add Note - Notes App{% endblock %}
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+{% block content %}
+<style>
+.add-note-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    animation: fadeIn 0.6s ease-out;
+}
 
-        .navbar {
-            background: rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(8px);
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .navbar-brand {
-            color: #fff !important;
-            font-weight: 600;
-        }
+/* Header Section */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
 
-        .form-container {
-            max-width: 600px;
-            width: 100%;
-            margin: auto;
-            margin-top: 30px;
-        }
+.page-title {
+    color: var(--text-main);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        .form-card {
-            border-radius: 18px;
-            background: #ffffff;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-        }
+.title-icon {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2rem;
+}
 
-        .form-title {
-            font-weight: 600;
-            text-align: center;
-            margin-bottom: 25px;
-        }
+.btn-back {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-        .form-control {
-            border-radius: 10px;
-            padding: 10px;
-        }
+.btn-back:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(-3px);
+}
 
-        textarea {
-            resize: none;
-        }
+/* Form Card */
+.form-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
 
-        .btn-custom {
-            background: #667eea;
-            color: #fff;
-            border-radius: 10px;
-            font-weight: 500;
-        }
+.form-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent));
+}
 
-        .btn-custom:hover {
-            background: #5a67d8;
-        }
+/* Form Elements */
+.form-group {
+    margin-bottom: 25px;
+}
 
-        .bottom-space {
-            height: 40px;
-        }
-    </style>
-</head>
-<body>
+.form-label {
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: block;
+}
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg px-4">
-    <span class="navbar-brand">Notes Management</span>
+.form-control {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    width: 100%;
+}
 
-    <div class="ms-auto">
-        <a href="/dashboard" class="btn btn-light me-2">Dashboard</a>
-        <a href="/logout" class="btn btn-danger">Logout</a>
+.form-control:focus {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    color: var(--text-main);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: rgba(148, 163, 184, 0.4);
+}
+
+textarea.form-control {
+    min-height: 250px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-cancel {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
+.btn-cancel:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--primary-color), #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #4f46e5, var(--primary-color));
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .form-card {
+        padding: 25px 20px;
+        border-radius: 16px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .btn-submit, .btn-cancel {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.05);
+        order: 2;
+    }
+    
+    .btn-submit {
+        order: 1;
+    }
+}
+</style>
+
+<div class="add-note-wrapper py-4">
+
+    <div class="page-header">
+        <h2 class="page-title">
+            <i class="bi bi-journal-plus title-icon"></i>
+            Create Note
+        </h2>
+        <a href="/dashboard" class="btn-back">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
     </div>
-</nav>
 
-<!-- Flash Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="container mt-3">
-      {% for category, message in messages %}
-        <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
-
-<!-- Form Section -->
-<div class="form-container">
     <div class="form-card">
-        <h4 class="form-title">Create New Note</h4>
-
         <form method="POST">
-            <div class="mb-3">
-                <label class="form-label">Title</label>
-                <input type="text" name="title" class="form-control" placeholder="Enter note title" required>
+            
+            <div class="form-group">
+                <label class="form-label">Note Title</label>
+                <input type="text" name="title" class="form-control" placeholder="E.g., Meeting Notes - Q3 Planning" required autocomplete="off" autofocus>
             </div>
 
-            <div class="mb-4">
+            <div class="form-group">
                 <label class="form-label">Content</label>
-                <textarea name="content" class="form-control" rows="6" placeholder="Write your note here..." required></textarea>
+                <textarea name="content" class="form-control" placeholder="Start writing your thoughts here..." required></textarea>
             </div>
 
-            <button type="submit" class="btn btn-custom w-100">Save Note</button>
+            <div class="form-actions">
+                <a href="/dashboard" class="btn-cancel">Cancel</a>
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-floppy-fill"></i> Save Note
+                </button>
+            </div>
+
         </form>
     </div>
+
 </div>
-    
-<div class="bottom-space"></div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+{% endblock %}

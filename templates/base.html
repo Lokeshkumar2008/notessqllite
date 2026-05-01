@@ -1,135 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Notes App{% endblock %}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Notes App{% endblock %}</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+<style>
+    :root {
+        --primary-color: #6366f1;
+        --primary-hover: #4f46e5;
+        --bg-color: #0f172a;
+        --card-bg: #1e293b;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --accent: #38bdf8;
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-main);
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    /* ===== NAVBAR (Glassmorphism) ===== */
+    .navbar {
+        background: rgba(15, 23, 42, 0.8) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 15px 0;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1030;
+        transition: all 0.3s ease;
+    }
+
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--text-main) !important;
+        font-weight: 700;
+        font-size: 1.5rem;
+        letter-spacing: -0.5px;
+    }
+
+    .navbar-brand img {
+        width: 38px;
+        filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5));
+    }
+
+    .navbar-brand span {
+        background: linear-gradient(135deg, #fff, var(--accent));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .nav-link {
+        color: var(--text-muted) !important;
+        font-weight: 500;
+        font-size: 1.05rem;
+        padding: 8px 16px !important;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        margin: 0 4px;
+    }
+
+    .nav-link:hover, .nav-link.active {
+        color: var(--text-main) !important;
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateY(-1px);
+    }
+
+    .navbar-toggler {
+        border: none;
+        color: var(--text-main);
+        padding: 8px;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+
+    .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+
+    /* ===== FLASH MESSAGES ===== */
+    .flash-container {
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        z-index: 1050;
+        width: 100%;
+        max-width: 400px;
+        pointer-events: none; /* Let clicks pass through the container */
+    }
+
+    .flash-container .alert {
+        pointer-events: auto; /* Re-enable clicks on the alert itself */
+        background: rgba(30, 41, 59, 0.95);
+        backdrop-filter: blur(10px);
+        color: var(--text-main);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: 4px solid var(--primary-color);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .alert-success { border-left-color: #10b981; }
+    .alert-danger { border-left-color: #ef4444; }
+    .alert-warning { border-left-color: #f59e0b; }
+    .alert-info { border-left-color: #3b82f6; }
+
+    .alert .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+        opacity: 0.5;
+    }
+
+    /* ===== CONTENT ===== */
+    .content {
+        margin-top: 80px; /* Account for fixed navbar */
+        padding: 40px 20px;
+        flex: 1; /* Pushes footer to bottom */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* ===== PREMIUM FOOTER ===== */
+    .footer {
+        background: #0b1121;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 60px 0 20px;
+        margin-top: auto;
+    }
+
+    .footer-brand {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .footer-desc {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    .footer h5 {
+        color: var(--text-main);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        position: relative;
+        padding-bottom: 10px;
+    }
+
+    .footer h5::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 30px;
+        height: 2px;
+        background: var(--primary-color);
+        border-radius: 2px;
+    }
+
+    .footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .footer-links li {
+        margin-bottom: 12px;
+    }
+
+    .footer-links a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .footer-links a:hover {
+        color: var(--accent);
+        transform: translateX(5px);
+    }
+
+    .social-links {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-main);
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+        background: var(--primary-color);
+        transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin-top: 50px;
+        padding-top: 20px;
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    /* ===== MOBILE RESPONSIVE ===== */
+    @media (max-width: 991px) {
+        .navbar-collapse {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .navbar {
-            background: rgba(0,0,0,0.3);
+        .nav-link {
+            padding: 12px 16px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 0;
         }
 
-        .navbar-brand, .nav-link {
-            color: white !important;
+        .nav-link:last-child {
+            border-bottom: none;
         }
 
-        .content {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .footer {
+            padding: 40px 0 20px;
         }
 
-        footer {
-            background: rgba(0,0,0,0.4);
-            color: white;
-            text-align: center;
-            padding: 10px;
+        .footer-col {
+            margin-bottom: 40px;
         }
-
-        /* Flash */
+        
         .flash-container {
-            position: fixed;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 400px;
-            z-index: 9999;
+            right: 10px;
+            left: 10px;
+            width: auto;
+            max-width: none;
         }
-
-        /* Mobile flash width */
-        @media (max-width: 576px) {
-            .flash-container {
-                width: 90%;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
+
 <body>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-md px-4">
-    <div class="container-fluid">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" alt="Logo">
+            <span>Notes App</span>
+        </a>
 
-        <span class="navbar-brand">Notes Management</span>
-
-        <!-- Toggle (only small screen) -->
-        <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <!-- Menu -->
         <div class="collapse navbar-collapse" id="navMenu">
-            <ul class="navbar-nav ms-md-auto text-start text-md-center gap-md-4">
-
-                <li class="nav-item">
-                    <a href="/dashboard" class="nav-link">Dashboard</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/about" class="nav-link">About</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/contact" class="nav-link">Contact</a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="/logout" class="nav-link">Logout</a>
-                </li>
-
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                {% if session.get('user_id') %}
+                    <li class="nav-item"><a href="/dashboard" class="nav-link"><i class="bi bi-grid-1x2-fill me-1"></i> Dashboard</a></li>
+                    <li class="nav-item"><a href="/addnote" class="nav-link"><i class="bi bi-plus-circle-fill me-1"></i> Add Notes</a></li>
+                    <li class="nav-item"><a href="/viewall" class="nav-link"><i class="bi bi-collection-fill me-1"></i> View Notes</a></li>
+                    <li class="nav-item ms-lg-2 mt-3 mt-lg-0">
+                        <a href="/logout" class="btn btn-outline-danger btn-sm px-4 py-2 w-100 rounded-pill" style="font-weight: 600;">
+                            <i class="bi bi-box-arrow-right me-1"></i> Logout
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="/about" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="/contact" class="nav-link">Contact</a></li>
+                    <li class="nav-item ms-lg-2 mt-3 mt-lg-0"><a href="/" class="nav-link">Login</a></li>
+                    <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                        <a href="/register" class="btn btn-primary px-4 py-2 w-100 rounded-pill" style="background: var(--primary-color); border: none; font-weight: 600;">
+                            Register Free
+                        </a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
-
     </div>
 </nav>
 
-<!-- Flash Messages -->
+<!-- FLASH MESSAGES -->
 <div class="flash-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, msg in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
-                    {{ msg }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, msg in messages %}
+            <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
+                {% if category == 'success' %}
+                    <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+                {% elif category == 'error' or category == 'danger' %}
+                    <i class="bi bi-exclamation-triangle-fill fs-5 text-danger"></i>
+                {% else %}
+                    <i class="bi bi-info-circle-fill fs-5 text-info"></i>
+                {% endif %}
+                <div class="flex-grow-1">{{ msg }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
 </div>
 
 <!-- CONTENT -->
-<div class="content">
+<main class="content">
     {% block content %}{% endblock %}
-</div>
+</main>
 
-<!-- Footer -->
-<footer>
-    <p class="mb-0">© 2026 Notes Management System</p>
+<!-- PREMIUM FOOTER -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 footer-col">
+                <span class="footer-brand">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2991/2991108.png" width="28" class="me-2" style="filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.8));">
+                    Notes App
+                </span>
+                <p class="footer-desc">
+                    Your secure, intelligent cloud workspace. Capture ideas, organize your life, and boost productivity with our premium note-taking experience.
+                </p>
+                <div class="social-links">
+                    <a href="#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="#"><i class="bi bi-github"></i></a>
+                    <a href="#"><i class="bi bi-discord"></i></a>
+                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-6 footer-col">
+                <h5>Product</h5>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Features</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Pricing</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Security</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Integrations</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-2 col-md-6 footer-col">
+                <h5>Resources</h5>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Documentation</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Help Center</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Blog</a></li>
+                    <li><a href="#"><i class="bi bi-chevron-right small"></i> Community</a></li>
+                </ul>
+            </div>
+
+            <div class="col-lg-4 col-md-6 footer-col">
+                <h5>Stay Updated</h5>
+                <p class="text-muted small mb-3">Subscribe to our newsletter for the latest features and productivity tips.</p>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Enter your email" aria-label="Email" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white;">
+                    <button class="btn btn-primary" type="button" style="background: var(--primary-color); border: none;">Subscribe</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="mb-0">&copy; 2026 Notes App. Reserverd by <i class="bi bi-heart-fill text-danger mx-1"></i> GLokesh.</p>
+        </div>
+    </div>
 </footer>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Auto hide flash -->
 <script>
+// Auto-dismiss flash messages
 setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(el => {
+    document.querySelectorAll('.flash-container .alert').forEach(el => {
         el.classList.remove('show');
-        setTimeout(() => el.remove(), 300);
+        setTimeout(() => el.remove(), 400); // Wait for fade out animation
     });
-}, 3000);
+}, 4000);
 </script>
 
 </body>

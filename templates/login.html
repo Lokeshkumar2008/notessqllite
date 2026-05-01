@@ -1,206 +1,260 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}Login - Notes App{% endblock %}
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+{% block content %}
+<style>
+/* Center the login container */
+.login-page-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 350px);
+    padding: 20px;
+    animation: fadeIn 0.6s ease-out;
+}
 
-        .navbar {
-            background: rgba(0, 0, 0, 0.3);
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .navbar-brand,
-        .nav-link {
-            color: white !important;
-        }
+.login-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 440px;
+    padding: 40px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
 
-        .main-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+/* Subtle glow at the top edge */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent));
+}
 
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-            background: #fff;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
+.login-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
 
-        .login-title {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+.login-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary-color);
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
 
-        .form-control {
-            border-radius: 10px;
-            padding: 10px;
-        }
+.login-title {
+    color: var(--text-main);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
 
-        .btn-custom {
-            background: #667eea;
-            color: #fff;
-            border-radius: 10px;
-        }
+.login-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
 
-        footer {
-            background: rgba(0, 0, 0, 0.4);
-            color: white;
-            text-align: center;
-            padding: 10px;
-            margin-top: auto;
-        }
+/* Form Inputs */
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
 
-        .flash-container {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 350px;
-            z-index: 9999;
-        }
+.form-label {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+}
 
-        /* 🔥 MOBILE IMPROVEMENTS */
-        @media (max-width: 576px) {
+.input-icon-wrapper {
+    position: relative;
+}
 
-            .navbar-brand {
-                font-size: 16px;
-            }
+.input-icon-wrapper i {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    transition: all 0.3s;
+    font-size: 1.1rem;
+    pointer-events: none; /* Let clicks pass through to input */
+}
 
-            .login-card {
-                padding: 20px;
-                border-radius: 12px;
-            }
+.form-control {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    border-radius: 12px;
+    padding: 14px 16px 14px 48px; /* Extra left padding for the icon */
+    font-size: 1rem;
+    transition: all 0.3s;
+    width: 100%;
+}
 
-            .login-title {
-                font-size: 20px;
-            }
+.form-control:focus {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    color: var(--text-main);
+}
 
-            .flash-container {
-                width: 90%;
-                top: 70px;
-            }
+.form-control:focus + i, .input-icon-wrapper:focus-within i {
+    color: var(--primary-color);
+}
 
-            .nav-link {
-                padding: 10px 0;
-            }
-        }
-    </style>
-</head>
-<body>
+.form-control::placeholder {
+    color: rgba(148, 163, 184, 0.4);
+}
 
-<!-- ✅ RESPONSIVE NAVBAR -->
-<nav class="navbar navbar-expand-md px-3">
-    <div class="container-fluid">
+/* Forgot Password */
+.forgot-pwd {
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 25px;
+}
 
-        <!-- TOP ROW -->
-        <div class="d-flex w-100 align-items-center justify-content-between">
+.forgot-pwd a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s;
+}
 
-            <!-- LEFT -->
-            <span class="navbar-brand">Notes Management System</span>
+.forgot-pwd a:hover {
+    color: var(--text-main);
+}
 
-            <!-- TOGGLE -->
-            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+/* Submit Button */
+.btn-login {
+    background: linear-gradient(135deg, var(--primary-color), #4f46e5);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
 
-        </div>
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #4f46e5, var(--primary-color));
+}
 
-        <!-- COLLAPSE MENU -->
-        <div class="collapse navbar-collapse mt-3 mt-md-0" id="navMenu">
+/* Register Link */
+.register-link {
+    text-align: center;
+    margin-top: 30px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-            <ul class="navbar-nav ms-md-auto text-start text-md-center gap-md-3">
+.register-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+    transition: all 0.3s;
+}
 
-                <li class="nav-item">
-                    <a href="/" class="nav-link">Home</a>
-                </li>
+.register-link a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+}
 
-                <li class="nav-item">
-                    <a href="/about" class="nav-link">About</a>
-                </li>
+/* MOBILE RESPONSIVE */
+@media (max-width: 576px) {
+    .login-card {
+        padding: 30px 20px;
+        border-radius: 16px;
+    }
+    
+    .login-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .login-title {
+        font-size: 1.5rem;
+    }
+}
+</style>
 
-                <li class="nav-item">
-                    <a href="/contact" class="nav-link">Contact</a>
-                </li>
-
-            </ul>
-
-        </div>
-
-    </div>
-</nav>
-<!-- FLASH -->
-<div class="flash-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, msg in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
-        {{ msg }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
-</div>
-
-<!-- LOGIN -->
-<div class="main-container">
+<div class="login-page-wrapper py-4">
     <div class="login-card">
-
-        <h4 class="login-title">Login</h4>
+        
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <h2 class="login-title">Welcome Back</h2>
+            <p class="login-subtitle">Sign in to access your secure workspace</p>
+        </div>
 
         <form method="POST">
-            <div class="mb-3">
-                <label>Email</label>
-                <input type="email" name="email" class="form-control" required>
+            
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <div class="input-icon-wrapper">
+                    <input type="email" name="email" class="form-control" placeholder="name@example.com" required autocomplete="email">
+                    <i class="bi bi-envelope"></i>
+                </div>
             </div>
 
-            <div class="mb-3">
-                <label>Password</label>
-                <input type="password" name="password" class="form-control" required>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <div class="input-icon-wrapper">
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                    <i class="bi bi-lock"></i>
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-custom w-100">Login</button>
+            <div class="forgot-pwd">
+                <a href="/forgot">Forgot your password?</a>
+            </div>
+
+            <button type="submit" class="btn-login">
+                Sign In <i class="bi bi-arrow-right"></i>
+            </button>
+
         </form>
 
-        <div class="text-center mt-3">
-            <a href="/forgot">Forgot Password?</a><br>
-            <span>Don't have an account? <a href="/register">Register</a></span>
+        <div class="register-link">
+            Don't have an account? <a href="/register">Register now</a>
         </div>
 
     </div>
 </div>
-
-<!-- FOOTER -->
-<footer>
-    <p class="mb-0">© 2026 Notes Management System</p>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(el => {
-        el.classList.remove('show');
-        setTimeout(() => el.remove(), 300);
-    });
-}, 3000);
-</script>
-
-</body>
-</html>
+{% endblock %}

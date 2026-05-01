@@ -1,195 +1,335 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+{% block title %}Dashboard - Notes App{% endblock %}
 
-
-<!-- Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+{% block content %}
 <style>
-    body {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        min-height: 100vh;
-        font-family: Arial, sans-serif;
-        display: flex;
+/* Center the container */
+.dashboard-page-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 120px 20px 40px; /* Accounts for fixed navbar and search */
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== GLASSMORPHIC SEARCH BAR ===== */
+.search-fixed {
+    position: fixed;
+    top: 70px; /* Adjust based on navbar height */
+    left: 0;
+    width: 100%;
+    padding: 15px 20px;
+    z-index: 990; /* Below navbar (1030) */
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.search-box {
+    max-width: 800px;
+    margin: auto;
+    display: flex;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 50px;
+    padding: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s;
+}
+
+.search-box:focus-within {
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+    border-color: var(--primary-color);
+    background: rgba(30, 41, 59, 0.95);
+}
+
+.search-box input {
+    border: none;
+    background: transparent;
+    border-radius: 50px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    outline: none;
+    color: var(--text-main);
+    width: 100%;
+}
+
+.search-box input::placeholder {
+    color: rgba(148, 163, 184, 0.5);
+}
+
+.search-btn {
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--primary-color), #4f46e5);
+    color: white;
+    padding: 10px 28px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+/* ===== GRID ===== */
+.notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+/* ===== MODERN CARD ===== */
+.card-note {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 25px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-note::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--accent));
+    opacity: 0;
+    transition: all 0.3s;
+}
+
+.card-note:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.card-note:hover::before {
+    opacity: 1;
+}
+
+/* ===== TEXT ===== */
+.note-content {
+    flex-grow: 1;
+    margin-bottom: 20px;
+}
+
+.card-note h5 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-note p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+/* ===== BUTTONS ===== */
+.btn-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 20px;
+}
+
+.action-btn {
+    border-radius: 10px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-view {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.btn-view:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.btn-edit {
+    background: rgba(56, 189, 248, 0.1);
+    color: var(--accent);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+}
+.btn-edit:hover {
+    background: var(--accent);
+    color: var(--bg-color);
+}
+
+.btn-delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+.btn-delete:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-box {
+    text-align: center;
+    padding: 80px 20px;
+    background: var(--card-bg);
+    border-radius: 24px;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    max-width: 600px;
+    margin: 40px auto;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    animation: float 3s ease-in-out infinite;
+    display: inline-block;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+.empty-box h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 10px;
+}
+
+.empty-box p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+.btn-add {
+    background: linear-gradient(135deg, var(--primary-color), #4f46e5);
+    color: white;
+    padding: 14px 36px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+    color: white;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .dashboard-page-wrapper {
+        padding: 140px 15px 40px;
+    }
+
+    .search-fixed {
+        padding: 12px 15px;
+        top: 60px;
+    }
+
+    .btn-actions {
         flex-direction: column;
     }
-
-    .navbar {
-        background: rgba(0,0,0,0.3);
-        backdrop-filter: blur(6px);
-        padding: 10px 20px;
-    }
-
-    .navbar-brand {
-        color: white !important;
-        font-size: 22px;
-        font-weight: bold;
-    }
-
-    .search-box {
+    
+    .action-btn {
         width: 100%;
-    }
-
-    .card-note {
-        border-radius: 15px;
-        background: #fff;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        transition: 0.3s;
-    }
-
-    .card-note:hover {
-        transform: scale(1.05);
-    }
-
-    .container {
-        margin-top: 30px;
-        flex: 1;
-    }
-
-    .flash-container {
-        position: fixed;
-        top: 80px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 350px;
-        z-index: 9999;
-    }
-
-    .btn {
-        border-radius: 100px;
-    }
-
-    footer {
-        background: rgba(0,0,0,0.4);
-        color: white;
-        text-align: center;
         padding: 10px;
     }
-
-    @media (max-width: 768px) {
-        .flash-container {
-            width: 90%;
-        }
-    }
+}
 </style>
 
-
-</head>
-<body>
-
-<!-- NAVBAR -->
-
-<nav class="navbar navbar-expand-md">
-  <div class="container-fluid">
-
-
-<a class="navbar-brand" href="#">Notes Management System</a>
-
-<button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-  <span class="navbar-toggler-icon"></span>
-</button>
-
-<div class="d-flex align-items-center gap-2">
-  <div class="dropdown d-md-none">
-    <button class="btn btn-light" data-bs-toggle="dropdown">⋮</button>
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="/addnote">Add Note</a></li>
-      <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-    </ul>
-  </div>
+<!-- 🔥 PREMIUM SEARCH -->
+<div class="search-fixed">
+    <div class="search-box">
+        <form class="d-flex w-100 m-0" method="GET" action="/dashboard">
+            <input type="search" name="search" placeholder="Search your notes..." autocomplete="off">
+            <button type="submit" class="search-btn">
+                <i class="bi bi-search"></i>
+                <span class="d-none d-sm-inline ms-1">Search</span>
+            </button>
+        </form>
+    </div>
 </div>
 
-<div class="collapse navbar-collapse mt-3 mt-md-0" id="navMenu">
-
-  <!-- ✅ FIXED SEARCH -->
-  <div class="mx-md-auto w-100" style="max-width: 350px;">
-    <form class="d-flex" method="GET" action="/dashboard">
-      <input type="search" name="search" class="form-control rounded-pill me-2" placeholder="Search...">
-      <button class="btn btn-light rounded-pill">Search</button>
-    </form>
-  </div>
-
-  <div class="ms-auto d-none d-md-flex align-items-center gap-3">
-    <a href="/addnote" class="btn btn-light px-3">Add Note</a>
-    <a href="/logout" class="btn btn-danger px-3">Logout</a>
-  </div>
-
-</div>
-
-
-  </div>
-</nav>
-
-<!-- FLASH -->
-
-<div class="flash-container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, msg in messages %}
-                <div class="alert alert-{{ category }} alert-dismissible fade show shadow">
-                    {{ msg }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-</div>
-
-<!-- CONTENT -->
-
-<div class="container">
-    <div class="row g-4">
-
-
+<div class="dashboard-page-wrapper">
     {% if notes %}
-        {% for note in notes %}
-        <div class="col-12 col-sm-6 col-md-4">
-            <div class="card card-note p-3">
-                <h5>{{ note[1] }}</h5>
-                <p>{{ note[2][:100] }}...</p>
+        <div class="notes-grid">
+            {% for note in notes %}
+            <div class="card-note">
+                <div class="note-content">
+                    <h5>{{ note[1] }}</h5>
+                    <p>{{ note[2][:120] }}{% if note[2]|length > 120 %}...{% endif %}</p>
+                </div>
 
-                <div class="d-flex gap-2 mt-2 flex-wrap">
-                    <a href="/viewnotes/{{ note[0] }}" class="btn btn-primary btn-sm">View</a>
-                    <a href="/updatenote/{{ note[0] }}" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="/deletenote/{{ note[0] }}" class="btn btn-danger btn-sm">Delete</a>
+                <div class="btn-actions">
+                    <a href="/viewnotes/{{ note[0] }}" class="action-btn btn-view"><i class="bi bi-eye"></i> View</a>
+                    <a href="/updatenote/{{ note[0] }}" class="action-btn btn-edit"><i class="bi bi-pencil-square"></i> Edit</a>
+                    <a href="/deletenote/{{ note[0] }}" class="action-btn btn-delete"><i class="bi bi-trash3"></i> Delete</a>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     {% else %}
-        <div class="col-12 text-center text-white mt-5">
-            <h4>No Notes Found 😔</h4>
-            <p>Try another search or add a new note.</p>
-            <a href="/addnote" class="btn btn-light">AddNote</a>
+        <div>
+            <div class="empty-box">
+                <div class="empty-icon"><i class="bi bi-journal-x"></i></div>
+                <h4>No Notes Found</h4>
+                <p>It looks like you haven't created any notes yet or none match your search.</p>
+                <a href="/addnote" class="btn-add"><i class="bi bi-plus-lg"></i> Create New Note</a>
+            </div>
         </div>
     {% endif %}
-
 </div>
-
-
-</div>
-
-<!-- FOOTER -->
-
-<footer>
-    <p class="mb-0">© 2026 Notes Management System</p>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-setTimeout(() => {
-    document.querySelectorAll('.alert').forEach(el => {
-        el.classList.remove('show');
-        setTimeout(() => el.remove(), 300);
-    });
-}, 3000);
-</script>
-
-</body>
-</html>
+{% endblock %}

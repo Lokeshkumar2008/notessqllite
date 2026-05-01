@@ -1,170 +1,338 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}About - Notes App{% endblock %}
 
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: white;
-        }
+{% block content %}
+<style>
+.about-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    animation: fadeIn 0.8s ease-out;
+}
 
-        .navbar {
-            background: rgba(0,0,0,0.3);
-        }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .navbar-brand, .nav-link {
-            color: white !important;
-        }
+/* HERO SECTION */
+.about-hero {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(56, 189, 248, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 60px 30px;
+    border-radius: 20px;
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
 
-        .main-container {
-            flex: 1;
-            padding: 40px 15px;
-        }
+.about-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 60%);
+    z-index: 0;
+}
 
-        .about-title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+.about-hero-content {
+    position: relative;
+    z-index: 1;
+}
 
-        hr {
-            border-color: rgba(255,255,255,0.3);
-        }
+.about-hero h2 {
+    font-weight: 800;
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #fff, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-        footer {
-            background: rgba(0,0,0,0.4);
-            text-align: center;
-            padding: 10px;
-        }
+.about-hero p {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
 
-        /* Mobile */
-        @media (max-width: 768px) {
-            .main-container {
-                padding: 20px 10px;
-            }
+/* FEATURE CARDS */
+.about-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 30px;
+    height: 100%;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
 
-            .about-title {
-                font-size: 22px;
-            }
+.about-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
 
-            h4 {
-                font-size: 18px;
-            }
+.about-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
 
-            p, li {
-                font-size: 14px;
-            }
-        }
-    </style>
-</head>
-<body>
+.about-card:hover::after {
+    opacity: 1;
+}
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg px-3">
-    <div class="container-fluid">
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    transition: all 0.3s;
+}
 
-        <span class="navbar-brand">Notes Management System</span>
+.about-card:hover .icon-wrapper {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.1);
+}
 
-        <!-- Toggle -->
-        <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+.about-card h4 {
+    color: var(--text-main);
+    font-weight: 600;
+    margin-bottom: 15px;
+    font-size: 1.25rem;
+}
 
-        <!-- Menu -->
-        <div class="collapse navbar-collapse" id="navMenu">
-            <ul class="navbar-nav ms-lg-auto ms-0 text-start text-lg-center gap-lg-4">
+.about-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
 
-                <li class="nav-item">
-                    <a href="/dashboard" class="nav-link">Dashboard</a>
-                </li>
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-                <li class="nav-item">
-                    <a href="/contact" class="nav-link">Contact</a>
-                </li>
+.feature-list li {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-                <li class="nav-item">
-                    <a href="/logout" class="nav-link">Logout</a>
-                </li>
+.feature-list li i {
+    color: var(--accent);
+    font-size: 1.1rem;
+}
 
-            </ul>
-        </div>
+/* WIDE SECTION BOX */
+.section-box {
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 35px;
+    border-radius: 16px;
+    margin-top: 30px;
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+    transition: all 0.3s;
+}
 
-    </div>
-</nav>
-<!-- Flash Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="container mt-3">
-      {% for category, message in messages %}
-        <div class="alert alert-{{category}} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
+.section-box:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.8);
+}
 
-<!-- Content -->
-<div class="container main-container">
+.section-icon {
+    font-size: 2.5rem;
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.1);
+    width: 70px;
+    height: 70px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
 
-    <h2 class="about-title">About Notes Management System</h2>
+.section-content h4 {
+    color: var(--text-main);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
 
-    <p class="text-center">
-        A secure and simple platform to create, manage, and organize your personal notes.
-    </p>
+.section-content p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
 
-    <hr>
+.tech-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
 
-    <!-- Responsive Row -->
-    <div class="row mt-4 g-4">
+.tech-badge {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
 
-        <div class="col-12 col-md-6">
-            <h4>Our Purpose</h4>
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+    .about-hero {
+        padding: 40px 20px;
+    }
+    
+    .about-hero h2 {
+        font-size: 2rem;
+    }
+    
+    .section-box {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 25px;
+    }
+    
+    .tech-badges {
+        justify-content: center;
+    }
+}
+</style>
+
+<div class="about-wrapper py-4">
+
+    <!-- HERO -->
+    <div class="about-hero">
+        <div class="about-hero-content">
+            <h2>About Notes App</h2>
             <p>
-                This system helps users store notes digitally in a secure way.
-                Each user has a private workspace to manage notes anytime.
+                A highly secure, blazing-fast, and modern workspace designed to elevate your productivity and simplify how you capture ideas.
             </p>
         </div>
-
-        <div class="col-12 col-md-6">
-            <h4>Key Features</h4>
-            <ul>
-                <li>User Authentication</li>
-                <li>Add / Edit / Delete Notes</li>
-                <li>Secure Data</li>
-                <li>Private Access</li>
-                <li>Responsive Design</li>
-            </ul>
-        </div>
-
     </div>
 
-    <hr>
+    <div class="row g-4">
+        <!-- PURPOSE -->
+        <div class="col-md-6">
+            <div class="about-card">
+                <div class="icon-wrapper">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+                <h4>Our Purpose</h4>
+                <p>
+                    Built to help users efficiently create, store, and manage their knowledge in a seamless environment. We ensure your ideas are accessible anytime, anywhere, with uncompromising privacy.
+                </p>
+            </div>
+        </div>
 
-    <h4>Technologies Used</h4>
-    <p>
-        HTML, CSS, Bootstrap, Flask (Python), and MySQL.
-    </p>
+        <!-- FEATURES -->
+        <div class="col-md-6">
+            <div class="about-card">
+                <div class="icon-wrapper">
+                    <i class="bi bi-stars"></i>
+                </div>
+                <h4>Key Features</h4>
+                <ul class="feature-list">
+                    <li><i class="bi bi-shield-check"></i> Enterprise-grade Authentication</li>
+                    <li><i class="bi bi-pencil-square"></i> Intuitive Note Management</li>
+                    <li><i class="bi bi-lock-fill"></i> End-to-End Privacy Focus</li>
+                    <li><i class="bi bi-lightning-charge-fill"></i> Lightning Fast Interface</li>
+                    <li><i class="bi bi-phone"></i> Fully Responsive Design</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MISSION -->
+        <div class="col-md-6">
+            <div class="about-card">
+                <div class="icon-wrapper">
+                    <i class="bi bi-rocket-takeoff"></i>
+                </div>
+                <h4>Our Mission</h4>
+                <p>
+                    To provide a powerful yet minimalist platform that removes friction from organizing tasks, ideas, and critical information without unnecessary complexity.
+                </p>
+            </div>
+        </div>
+
+        <!-- VISION -->
+        <div class="col-md-6">
+            <div class="about-card">
+                <div class="icon-wrapper">
+                    <i class="bi bi-eye"></i>
+                </div>
+                <h4>Our Vision</h4>
+                <p>
+                    To become the most trusted digital companion for modern professionals and creatives, delivering unparalleled reliability and a premium user experience.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- WHY CHOOSE US -->
+    <div class="section-box">
+        <div class="section-icon">
+            <i class="bi bi-award"></i>
+        </div>
+        <div class="section-content">
+            <h4>Why Choose Us?</h4>
+            <p>
+                Unlike bloated traditional applications, our system is engineered for raw performance and simplicity. We prioritize an ad-free, distraction-free environment with a sleek dark-mode interface that reduces eye strain and keeps you focused on what matters.
+            </p>
+        </div>
+    </div>
+
+    <!-- TECHNOLOGY -->
+    <div class="section-box">
+        <div class="section-icon">
+            <i class="bi bi-cpu"></i>
+        </div>
+        <div class="section-content">
+            <h4>Technologies Used</h4>
+            <p>
+                Built using a robust, modern technology stack ensuring scalability and rapid response times.
+            </p>
+            <div class="tech-badges">
+                <span class="tech-badge"><i class="bi bi-bootstrap-fill text-purple"></i> Bootstrap 5</span>
+                <span class="tech-badge"><i class="bi bi-filetype-py"></i> Flask (Python)</span>
+                <span class="tech-badge"><i class="bi bi-database-fill"></i> SQLite / MySQL</span>
+                <span class="tech-badge"><i class="bi bi-palette-fill"></i> Vanilla CSS3</span>
+                <span class="tech-badge"><i class="bi bi-braces"></i> Jinja2 Templates</span>
+            </div>
+        </div>
+    </div>
 
 </div>
-
-<!-- Footer -->
-<footer>
-    <p class="mb-0 text-white">© 2026 Notes Management System</p>
-</footer>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
+{% endblock %}
